@@ -88,6 +88,7 @@ public class Bootstrap {
                 }
             }
             logger.debug("EMC root is {}", EMC_ROOT.getAbsolutePath());
+            extractBundledMods();
             FrameworkConstants.VALID_EMC_INSTANCE = Validator.isValidInstance();
             if (!FrameworkConstants.VALID_EMC_INSTANCE) {
                 logger.warn("EMC instance is not up to date! This may cause instability or crashes.");
@@ -123,6 +124,31 @@ public class Bootstrap {
             }));
         } catch (Exception ex) {
             logger.warn("Failed to load EMC", ex);
+        }
+    }
+
+    /**
+     * Versión todo-en-uno: si este jar trae mods de EMC adentro (emc-bundled/*.jar,
+     * por ejemplo Aristois.jar), los copia a EMC_ROOT para que DirectoryModDiscovery
+     * los cargue. Solo reescribe si cambió el tamaño, así no pisa nada en cada arranque.
+     */
+    private static void extractBundledMods() {
+        try (java.io.InputStream index = Bootstrap.class.getResourceAsStream("/emc-bundled/index.txt")) {
+            if (index == null) return;
+            for (String name : new String(index.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).split("\\R")) {
+                name = name.trim();
+                if (name.isEmpty() || name.contains("/") || name.contains("..")) continue;
+                try (java.io.InputStream in = Bootstrap.class.getResourceAsStream("/emc-bundled/" + name)) {
+                    if (in == null) continue;
+                    byte[] data = in.readAllBytes();
+                    File target = new File(EMC_ROOT, name);
+                    if (target.exists() && target.length() == data.length) continue;
+                    java.nio.file.Files.write(target.toPath(), data);
+                    logger.info("Extracted bundled mod {}", name);
+                }
+            }
+        } catch (Exception ex) {
+            logger.warn("Failed to extract bundled mods", ex);
         }
     }
 

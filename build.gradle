@@ -95,3 +95,20 @@ task generateApiDocumentation(type: Javadoc) {
 }
 
 
+
+// Versión todo-en-uno (solo para uso local, NO se publica: Aristois es de Deftware).
+// ./gradlew build -ParistoisJar=/ruta/a/Aristois.jar  ->  build/libs/EMC-<ver>-aristois.jar
+def aristoisJar = project.findProperty('aristoisJar')
+if (aristoisJar) {
+	def bundleDir = layout.buildDirectory.dir('emc-bundled')
+	def prepareBundle = tasks.register('prepareAristoisBundle', Copy) {
+		from(aristoisJar) { rename { 'Aristois.jar' } }
+		into bundleDir.map { it.dir('emc-bundled') }
+		doLast { bundleDir.get().file('emc-bundled/index.txt').asFile.text = 'Aristois.jar\n' }
+	}
+	processResources {
+		dependsOn prepareBundle
+		from(bundleDir)
+	}
+	tasks.named('jar') { archiveClassifier = 'aristois' }
+}

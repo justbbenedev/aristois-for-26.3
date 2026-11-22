@@ -18,6 +18,30 @@ Así que le metí mano. Este repo es ese port con el arreglo.
 
 También comparé todo lo que `Aristois.jar` le pide a EMC (campos y métodos) contra este EMC. Esa era la única pieza que no coincidía.
 
+## Novedades (fix 2): Aristois funciona de verdad en 26.3
+
+Probado dentro del juego: el menú abre, los módulos se prenden y se apagan, X-ray esconde y muestra, y la lista de bloques del X-ray se puede editar.
+
+- **Menú sin crash:** Aristois deja áreas de recorte de 0 px o fuera de pantalla y 26.3 crasheaba. Ahora se recortan a la pantalla y, si quedan vacías, ese draw se saltea (`MixinGuiRendererScissor`).
+- **X-ray que no deja el mundo vacío:** `invalidateCompiledGeometry` tiraba la geometría sin rearmarla. Ahora usa `levelExtractor.allChanged()`, igual que F3+A.
+- **X-ray con la lista correcta:** se vuelve a cargar el mundo cuando cambia la lista de bloques, porque Aristois la carga después de activarse.
+- **X-ray con Fabric API:** Indigo arma los chunks por su cuenta y salteaba X-ray. `MixinIndigoBlockRenderer` aplica la misma lógica ahí (es opcional y no rompe nada si no hay Fabric API).
+- **Carpeta de mods propia:** si existe `<.minecraft>/mods-aristois`, el perfil la usa. Ahí no van Sodium ni Iris, que reemplazan el renderizado y rompen X-ray.
+
+### Un solo archivo (uso personal)
+
+```bash
+./gradlew build -ParistoisJar=/ruta/a/Aristois.jar
+# build/libs/EMC-<ver>-aristois.jar trae Aristois adentro y lo extrae al arrancar
+```
+
+Este jar **no** se publica, porque Aristois es de Deftware. Armalo con tu propio `Aristois.jar`.
+
+### Requisitos
+
+- Gráficos en **OpenGL** (Opciones → Video). Con Vulkan, Aristois cierra el juego.
+- Sin Sodium ni Iris en el perfil de Aristois.
+
 ## Instalación
 
 Necesitás Minecraft **26.3** (abrilo una vez sin mods), **Java 25** y tres archivos:

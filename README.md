@@ -1,78 +1,67 @@
-# Aristois for 26.3 version 🛠️
+# Aristois for 26.3
 
-> *Unofficial. EN: Fork of the community EMC port for Minecraft 26.3 that fixes the crash when opening the Aristois menu. Instructions below are in Spanish, but the steps are the same.*
+**Unofficial** build of the EMC framework that runs **Aristois on Minecraft 26.3** (Fabric).
 
-Probé el port de la comunidad de **EMC (Easy Minecraft Client)** para 26.3. El juego arrancaba, y apenas Aristois quería dibujar su menú, chau:
+[![Download](https://img.shields.io/github/v/release/justbbenedev/aristois-for-26.3?label=download&style=for-the-badge)](https://github.com/justbbenedev/aristois-for-26.3/releases/latest)
+![Minecraft](https://img.shields.io/badge/minecraft-26.3-3c8527?style=for-the-badge)
+![Loader](https://img.shields.io/badge/loader-fabric-dbd0b4?style=for-the-badge)
+![Java](https://img.shields.io/badge/java-25-orange?style=for-the-badge)
 
-```
-java.lang.NoSuchFieldError: Class ... does not have member field 'int glId'
-```
+## Download
 
-Así que le metí mano. Este repo es ese port con el arreglo.
+Grab the latest release from the **[Releases page](https://github.com/justbbenedev/aristois-for-26.3/releases/latest)**:
 
-## Qué estaba roto
+| File | Goes to |
+|---|---|
+| `EMC-F-v2-latest-26.3.jar` | `.minecraft/libraries/me/deftware/EMC-F-v2/latest-26.3/` |
+| `26.3-Aristois.json` | `.minecraft/versions/26.3-Aristois/` |
 
-`Aristois.jar` está compilado contra EMC 1.21.4. Ahí `GlTexture.glId` era un `int`, el id de la textura en OpenGL. Con el renderer nuevo de Minecraft, el port a 26.3 lo cambió a `GpuTexture`. Aristois busca el campo `int glId`, no lo encuentra y crashea.
+`Aristois.jar` is not included. Get it from [aristois.net](https://aristois.net/download) and put it in `.minecraft/libraries/EMC/26.3/`.
 
-**El arreglo:** la textura nueva se guarda en `gpuTexture` (y `getGlId()` la sigue devolviendo), y vuelve `int glId` para que Aristois sepa si la textura está lista: `0` = no, distinto de `0` = sí. Es un cambio de 20 líneas en [`GlTexture.java`](src/main/java/me/deftware/client/framework/render/texture/GlTexture.java).
+## Install
 
-También comparé todo lo que `Aristois.jar` le pide a EMC (campos y métodos) contra este EMC. Esa era la única pieza que no coincidía.
+1. Launch vanilla **26.3** once.
+2. Copy the files above to their folders.
+3. Restart your launcher, pick the **26.3-Aristois** version and play.
+4. Open the Aristois menu in game with **Right Shift**.
 
-## Novedades (fix 2): Aristois funciona de verdad en 26.3
+## Requirements
 
-Probado dentro del juego: el menú abre, los módulos se prenden y se apagan, X-ray esconde y muestra, y la lista de bloques del X-ray se puede editar.
+- Minecraft **26.3**
+- **Java 25**
+- Graphics backend set to **OpenGL** (Options → Video Settings)
 
-- **Menú sin crash:** Aristois deja áreas de recorte de 0 px o fuera de pantalla y 26.3 crasheaba. Ahora se recortan a la pantalla y, si quedan vacías, ese draw se saltea (`MixinGuiRendererScissor`).
-- **X-ray que no deja el mundo vacío:** `invalidateCompiledGeometry` tiraba la geometría sin rearmarla. Ahora usa `levelExtractor.allChanged()`, igual que F3+A.
-- **X-ray con la lista correcta:** se vuelve a cargar el mundo cuando cambia la lista de bloques, porque Aristois la carga después de activarse.
-- **X-ray con Fabric API:** Indigo arma los chunks por su cuenta y salteaba X-ray. `MixinIndigoBlockRenderer` aplica la misma lógica ahí (es opcional y no rompe nada si no hay Fabric API).
-- **Carpeta de mods propia:** si existe `<.minecraft>/mods-aristois`, el perfil la usa. Ahí no van Sodium ni Iris, que reemplazan el renderizado y rompen X-ray.
+## Compatibility
 
-### Un solo archivo (uso personal)
+- Works alongside other **Fabric mods**, resource packs and Fabric API.
+- Optional extra mods folder: if `.minecraft/mods-aristois/` exists, this profile loads mods from there instead of `.minecraft/mods/`. Use it to keep a separate mod set for Aristois.
+- Mods that replace the chunk renderer can conflict with render modules.
 
-```bash
-./gradlew build -ParistoisJar=/ruta/a/Aristois.jar
-# build/libs/EMC-<ver>-aristois.jar trae Aristois adentro y lo extrae al arrancar
-```
+## Fixes over the original 26.3 port
 
-Este jar **no** se publica, porque Aristois es de Deftware. Armalo con tu propio `Aristois.jar`.
+- Crash when opening the menu: `NoSuchFieldError: int glId`.
+- Crash when drawing menus: `Scissor size must be >0` / `Scissor ... is out of bounds`.
+- Render modules leaving the world blank after being toggled (chunks are now rebuilt the same way as F3+A).
+- Block lists applied correctly when chunks are built through the Fabric Renderer API (Indigo).
+- `fabric.modsFolder` is respected when it is already set.
 
-### Requisitos
-
-- Gráficos en **OpenGL** (Opciones → Video). Con Vulkan, Aristois cierra el juego.
-- Sin Sodium ni Iris en el perfil de Aristois.
-
-## Instalación
-
-Necesitás Minecraft **26.3** (abrilo una vez sin mods), **Java 25** y tres archivos:
-
-| Archivo | De dónde | A dónde va |
-|---|---|---|
-| `EMC-F-v2-latest-26.3.jar` | [Releases de este repo](../../releases) | `.minecraft/libraries/me/deftware/EMC-F-v2/latest-26.3/` |
-| `26.3-Aristois.json` | [Releases de este repo](../../releases) | `.minecraft/versions/26.3-Aristois/` |
-| `Aristois.jar` | [aristois.net](https://aristois.net/download) o el [release de memelet11](https://github.com/memelet11/aristois-26.3-minecraft-release/releases) | `.minecraft/libraries/EMC/26.3/` |
-
-Después reiniciá el launcher, elegí **26.3-Aristois** y dale a jugar. Aristois se abre con **Shift derecho**.
-
-> `Aristois.jar` no está en este repo a propósito: es el cliente de Deftware, cerrado y sin licencia que permita redistribuirlo. Acá va solo EMC, que es MIT.
-
-## Compilar
+## Build from source
 
 ```bash
-export JAVA_HOME=/ruta/a/jdk-25
+export JAVA_HOME=/path/to/jdk-25
 ./gradlew build
-# sale en build/libs/EMC-17.0.0.jar → renombralo a EMC-F-v2-latest-26.3.jar
+# build/libs/EMC-<version>.jar  ->  rename to EMC-F-v2-latest-26.3.jar
 ```
 
-## Ojo
+For personal use you can embed your own `Aristois.jar` into a single file:
 
-- En la mayoría de los servidores los clientes como Aristois están prohibidos y te pueden banear. Usalo en tus mundos.
-- Lo de Aristois que se rompió entre 1.21.4 y 26.3 por dentro no lo puedo arreglar, porque es código cerrado. Si algo falla, abrí un issue con el crash report.
+```bash
+./gradlew build -ParistoisJar=/path/to/Aristois.jar
+# build/libs/EMC-<version>-aristois.jar
+```
 
-## Créditos
+## Notes
 
-- [Deftware](https://gitlab.com/EMC-Framework/EMC): EMC y Aristois
-- [memelet11](https://github.com/memelet11/aristois-26.3-minecraft-release): el port de EMC a 26.3
-- yo: el arreglo de `glId` y mucho mate 🧉
-
-Licencia MIT, igual que EMC (ver [LICENSE](LICENSE)).
+- Clients like Aristois are banned on most servers. Use it in your own worlds.
+- Not affiliated with Deftware. Aristois and EMC are made by [Deftware](https://gitlab.com/EMC-Framework/EMC). EMC is MIT licensed, see [LICENSE](LICENSE).
+- Based on the 26.3 port by [memelet11](https://github.com/memelet11/aristois-26.3-minecraft-release).

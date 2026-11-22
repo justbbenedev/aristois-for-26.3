@@ -16,10 +16,17 @@ import java.io.File;
 public class Main implements PreLaunchEntrypoint {
     public static void main(String[] args) {
         try {
-            File emcFile = LocationUtil.getEMC().toFile();
-            if (System.getProperty("fabric.modsFolder") == null && emcFile != null && emcFile.getParentFile() != null) {
-                System.setProperty("fabric.modsFolder", emcFile.getParentFile().getAbsolutePath());
+            // Carpeta de mods propia del perfil: <gameDir>/mods-aristois si existe
+            // (Sodium/Iris reemplazan el renderer y rompen X-ray y otros módulos).
+            String gameDir = ".";
+            for (int i = 0; i < args.length - 1; i++) {
+                if ("--gameDir".equals(args[i])) gameDir = args[i + 1];
             }
+            File own = new File(gameDir, "mods-aristois");
+            if (System.getProperty("fabric.modsFolder") == null && own.isDirectory()) {
+                System.setProperty("fabric.modsFolder", own.getAbsolutePath());
+            }
+            System.out.println("[EMC] fabric.modsFolder = " + System.getProperty("fabric.modsFolder"));
         } catch (Throwable t) {
             t.printStackTrace();
         }

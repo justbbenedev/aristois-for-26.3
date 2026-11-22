@@ -24,10 +24,14 @@ public abstract class MixinBlockModelRenderer {
     @Unique
     private BlockPos pos;
 
+    @Unique
+    private static int emc$dbg = 0;
+
     @Inject(method = "tesselateBlock", at = @At("HEAD"), cancellable = true)
     private void onTesselateBlockHead(BlockQuadOutput output, float x, float y, float z, BlockAndTintGetter level, BlockPos pos, BlockState state, BlockStateModel model, long seed, CallbackInfo ci) {
         this.pos = pos;
         BlockPropertyManager blockProperties = Bootstrap.blockProperties;
+        if (Boolean.getBoolean("emc.debugProps") && (emc$dbg++ % 200000) == 0) System.out.println("[EMC-DEBUG] tesselate n=" + emc$dbg + " active=" + blockProperties.isActive() + " opacityMode=" + blockProperties.isOpacityMode() + " size=" + blockProperties.size());
         if (!blockProperties.isActive()) {
             BlockManagement.isRenderingOpacityBlock.set(false);
             return;

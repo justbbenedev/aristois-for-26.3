@@ -292,6 +292,10 @@ public abstract class RenderStack<T> implements VertexConstructor {
 				}
 			}
 		}
+		if (scissor != null && (scissor.width() <= 0 || scissor.height() <= 0)) {
+			// Totalmente recortado: en 26.3 un scissor de tamaño 0 crashea el GuiRenderer
+			return;
+		}
 		if (scissor != null) {
 			bounds = scissor.intersection(bounds);
 			if (bounds == null) {

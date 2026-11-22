@@ -30,7 +30,9 @@ public class RenderHelper {
 		}
 		var mc = Minecraft.getInstance();
 		if (mc.level != null) {
-			mc.levelRenderer.invalidateCompiledGeometry(mc.level, mc.options, mc.gameRenderer.mainCamera(), mc.getBlockColors());
+			// Igual que F3+A en 26.3: invalidateCompiledGeometry solo tira la geometría
+			// y el mundo queda vacío; allChanged() la vuelve a compilar.
+			mc.levelExtractor.allChanged();
 		}
 	}
 

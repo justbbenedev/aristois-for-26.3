@@ -24,7 +24,8 @@
   },
   "license": "MIT",
   "mixins": [
-    "mixins.emc.json"
+    "mixins.emc.json",
+    "mixins.emc.indigo.json"
   ],
   "accessWidener": "emc.accesswidener"
 }

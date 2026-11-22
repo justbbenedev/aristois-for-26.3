@@ -12,6 +12,7 @@ public class PropertyManager<T extends IProperty> {
     private boolean active = false;
 
     public PropertyManager<T> register(T property) {
+        if (Boolean.getBoolean("emc.debugProps")) System.out.println("[EMC-DEBUG] register " + property.getId() + " " + net.minecraft.core.registries.BuiltInRegistries.BLOCK.byId(property.getId()));
         this.properties.put(property.getId(), property);
         return this;
     }
@@ -42,6 +43,11 @@ public class PropertyManager<T extends IProperty> {
 
     public void setActive(boolean active) {
         this.active = active;
+        if (Boolean.getBoolean("emc.debugProps")) {
+            StringBuilder sb = new StringBuilder();
+            for (int id : properties.keySet()) sb.append(id).append('=').append(net.minecraft.core.registries.BuiltInRegistries.BLOCK.byId(id)).append(' ');
+            System.out.println("[EMC-DEBUG] " + getClass().getSimpleName() + " active=" + active + " size=" + properties.size() + " -> " + sb);
+        }
     }
 
 }

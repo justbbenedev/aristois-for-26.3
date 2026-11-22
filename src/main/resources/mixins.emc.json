@@ -109,6 +109,7 @@
     "world.MixinChunkSection",
     "world.MixinWorld",
     "world.MixinWorldChunk",
-    "world.MixinWorldClient"
+    "world.MixinWorldClient",
+    "gui.MixinGuiRendererScissor"
   ]
 }

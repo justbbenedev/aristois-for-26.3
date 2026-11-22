@@ -1,0 +1,7 @@
+{
+  "required": false,
+  "package": "me.deftware.mixin.indigo",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": ["MixinIndigoBlockRenderer"],
+  "injectors": {"defaultRequire": 0}
+}

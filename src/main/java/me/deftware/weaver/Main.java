@@ -17,7 +17,7 @@ public class Main implements PreLaunchEntrypoint {
     public static void main(String[] args) {
         try {
             File emcFile = LocationUtil.getEMC().toFile();
-            if (emcFile != null && emcFile.getParentFile() != null) {
+            if (System.getProperty("fabric.modsFolder") == null && emcFile != null && emcFile.getParentFile() != null) {
                 System.setProperty("fabric.modsFolder", emcFile.getParentFile().getAbsolutePath());
             }
         } catch (Throwable t) {

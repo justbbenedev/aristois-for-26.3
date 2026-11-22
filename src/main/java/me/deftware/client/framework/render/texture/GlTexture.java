@@ -37,8 +37,17 @@ import java.nio.ByteBuffer;
  */
 public class GlTexture implements GuiScreen.BackgroundType {
 
-    @Getter
-    protected GpuTexture glId;
+    protected GpuTexture gpuTexture;
+
+    /**
+     * Compatibilidad con Aristois (compilado contra EMC 1.21.4, donde glId era el id
+     * entero de OpenGL): 0 = sin textura, distinto de 0 = lista.
+     */
+    protected int glId;
+
+    public GpuTexture getGlId() {
+        return gpuTexture;
+    }
 
     protected DynamicTexture dynamicTexture;
 
@@ -96,12 +105,12 @@ public class GlTexture implements GuiScreen.BackgroundType {
     public GlTexture bind() {
         boundGlTexture = this;
         boundMcTexture = dynamicTexture;
-        bindTexture(glId);
+        bindTexture(gpuTexture);
         return this;
     }
 
     public boolean isReady() {
-        return glId != null;
+        return gpuTexture != null;
     }
 
     public void unbind() {
@@ -144,10 +153,11 @@ public class GlTexture implements GuiScreen.BackgroundType {
             dynamicTexture.setPixels(img);
             dynamicTexture.upload();
         }
-        this.glId = dynamicTexture.getTexture();
+        this.gpuTexture = dynamicTexture.getTexture();
+        this.glId = 1;
         if (boundGlTexture == this) {
             boundMcTexture = dynamicTexture;
-            boundTexture = this.glId;
+            boundTexture = this.gpuTexture;
         }
     }
 
@@ -157,7 +167,8 @@ public class GlTexture implements GuiScreen.BackgroundType {
             dynamicTexture.close();
             dynamicTexture = null;
         }
-        glId = null;
+        gpuTexture = null;
+        glId = 0;
     }
 
     @Override

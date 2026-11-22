@@ -1,6 +1,6 @@
-# EMC + Aristois en Minecraft 26.3, versión que no crashea 🛠️
+# Aristois for 26.3 version 🛠️
 
-> *EN: Fork of the community EMC port for Minecraft 26.3 that fixes the crash when opening the Aristois menu. Instructions below are in Spanish, but the steps are the same.*
+> *Unofficial. EN: Fork of the community EMC port for Minecraft 26.3 that fixes the crash when opening the Aristois menu. Instructions below are in Spanish, but the steps are the same.*
 
 Probé el port de la comunidad de **EMC (Easy Minecraft Client)** para 26.3. El juego arrancaba, y apenas Aristois quería dibujar su menú, chau:
 

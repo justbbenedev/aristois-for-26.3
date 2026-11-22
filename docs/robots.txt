@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://justbbenedev.github.io/aristois-for-26.3/sitemap.xml

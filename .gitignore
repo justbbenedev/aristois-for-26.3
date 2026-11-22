@@ -3,5 +3,4 @@
 build/
 run/
 maven/
-docs/
 *.bak
